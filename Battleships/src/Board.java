@@ -130,7 +130,8 @@ public class Board extends JPanel {
 
 	public boolean hasBeenFiredUpon(int row, int col) {
 		// TODO Auto-generated method stub
-		return false;
+		
+		return firedPositions[row][col];
 	}
 
 	public void markPositionAsFiredUpon(int row, int col) {

@@ -8,6 +8,8 @@ public class ComputerPlayer {
     private int previousRow;
     private int previousCol;
     public int hitstreak = 0;
+    private Direction currentDirection;
+    private boolean targetingMode;
 
     public ComputerPlayer(Board computerBoard,Board playerBoard) {
         _computerBoard = computerBoard;
@@ -15,6 +17,7 @@ public class ComputerPlayer {
         _playerBoard = playerBoard;
         previousRow = 0;
         previousCol = 0;
+        targetingMode = false;
     }
 
     public void placeShipsRandomly() {
@@ -63,62 +66,90 @@ public class ComputerPlayer {
     
     
     
-    public void fireAtPlayerBoard(int row, int col) {
+    public void fireAtPlayerBoard() {
+        int row, col;
+        if (!targetingMode) {
+            row = getRandomRow();
+            col = getRandomColumn();
+        } else {
+            int[] target = getNextTarget();
+            row = target[0];
+            col = target[1];
+        }
+
         // Check if the position has already been fired upon
         if (_playerBoard.hasBeenFiredUpon(row, col)) {
-            System.out.println("You've already fired at this position. Choose a different position.");
+        	System.out.println("Computer Already Fired upon!" + row + " " +col);
+        	
+            fireAtPlayerBoard(); // Retry with a different position
             return;
         }
-        
-        // Check if the position is within the grid bounds
-        if (row >= _playerBoard.getRow() || col >= _playerBoard.getColumn()) {
-            System.out.println("You've tried to fire outside of the grid. Choose a different position.");
-            row = getRandomRow(); // Get a new random row
-            col = getRandomColumn(); // Get a new random column
-        }
-        
-        // Check for hit or miss based on the current hit streak
-        if (hitstreak == 0) {
-            // No hit streak, check the current position
-            if (_playerBoard.hasShipAt(row, col)) {
-                System.out.println("Computer Hit!");
-                // Mark the position as fired upon
-                _playerBoard.markPositionAsFiredUpon(row, col);
-                previousRow = row;
-                previousCol = col;
-                hitstreak++;
-            } else {
-                System.out.println("Computer Miss!");
-                // Mark the position as fired upon
-                _playerBoard.markPositionAsFiredUpon(row, col);
+
+        // Mark the position as fired upon
+        _playerBoard.markPositionAsFiredUpon(row, col);
+
+        if (_playerBoard.hasShipAt(row, col)) {
+            System.out.println("Computer Hit!");
+            previousRow = row;
+            previousCol = col;
+            hitstreak++;
+            if (!targetingMode) {
+                targetingMode = true;
+                currentDirection = Direction.UP; // Start with UP direction
             }
         } else {
-            // Hit streak active, continue targeting the next position
-        	int nextRow = previousRow + 1; // Calculate the next row
-        	if (nextRow >= _playerBoard.getRow()) {
-        		getRandomRow();
-			}
-        	
-            if (nextRow < _playerBoard.getRow()) {
-                if (_playerBoard.hasShipAt(nextRow, previousCol)) {
-                    System.out.println("Computer Hit!");
-                    // Mark the position as fired upon
-                    _playerBoard.markPositionAsFiredUpon(nextRow, previousCol);
-                    previousRow = nextRow; // Update the previous row
-                    hitstreak++;
-                } else {
-                    System.out.println("Computer Miss!");
-                    hitstreak = 0; // Reset the hit streak
-                    _playerBoard.markPositionAsFiredUpon(row, col);
+            System.out.println("Computer Miss!");
+            if (targetingMode) {
+                hitstreak = 0;
+                currentDirection = getNextDirection();
+                if (currentDirection == null) {
+                    targetingMode = false;
                 }
-            } else {
-                System.out.println("Computer Miss!"); // Out of bounds, treat as miss
-                hitstreak = 0; // Reset the hit streak
-                _playerBoard.markPositionAsFiredUpon(row, col);
             }
         }
     }
+
+    private int[] getNextTarget() {
+        int row = previousRow, col = previousCol;
+        switch (currentDirection) {
+            case UP:
+                row -= 1;
+                break;
+            case DOWN:
+                row += 1;
+                break;
+            case LEFT:
+                col -= 1;
+                break;
+            case RIGHT:
+                col += 1;
+                break;
+        }
+        if (row < 0 || row >= _playerBoard.getRow() || col < 0 || col >= _playerBoard.getColumn()) {
+            currentDirection = getNextDirection();
+            return getNextTarget();
+        }
+        return new int[]{row, col};
+    }
+
+    private Direction getNextDirection() {
+        switch (currentDirection) {
+            case UP:
+                return Direction.DOWN;
+            case DOWN:
+                return Direction.LEFT;
+            case LEFT:
+                return Direction.RIGHT;
+            case RIGHT:
+                return null; // All directions tried, reset to hunting mode
+        }
+        return null;
+    }
     
+    
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT
+    }
         
       
 }

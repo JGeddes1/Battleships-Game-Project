@@ -58,7 +58,7 @@ public class Game  {
 //			 COMPUTER SHOOTING
 			 
 
-			 computerPlayer.fireAtPlayerBoard(computerPlayer.getRandomRow(),computerPlayer.getRandomColumn());
+			 computerPlayer.fireAtPlayerBoard();
 			 
 
 		}
@@ -69,7 +69,7 @@ public class Game  {
     public static int getValidRow(Board board) {
         int row;
         while (true) {
-            System.out.print("Enter row (0 to " + (board.getRow() - 1) + "): ");
+            System.out.print("Enter row to shoot at (0 to " + (board.getRow() - 1) + "): ");
             Scanner scanner = new Scanner(System.in);
             try {
             	 row = scanner.nextInt();
@@ -92,7 +92,7 @@ public class Game  {
     public static int getValidColumn(Board board) {
         int col;
         while (true) {
-        	System.out.print("Enter column (0 to " + (board.getColumn() - 1) + "): ");
+        	System.out.print("Enter column to shoot at (0 to " + (board.getColumn() - 1) + "): ");
         	Scanner scanner = new Scanner(System.in);
             try {
                 col = scanner.nextInt();
