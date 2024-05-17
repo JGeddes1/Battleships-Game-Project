@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.Console;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Game  {
@@ -46,9 +47,11 @@ public class Game  {
         Player personPlaying = new Player(playerBoard, computerBoard);
         
         while (!gameover) {
-			 int playerShootPositionX = personPlaying.PlayerShootRow();
-			 int playerShootPositionY = personPlaying.PlayerShootColumn();
-			 personPlaying.fireAtComputerBoard(playerShootPositionX,playerShootPositionY);
+        	
+        	 playTurn(computerBoard, personPlaying);
+//			 int playerShootPositionX = personPlaying.PlayerShootRow();
+//			 int playerShootPositionY = personPlaying.PlayerShootColumn();
+//			 personPlaying.fireAtComputerBoard(playerShootPositionX,playerShootPositionY);
 			 
 	//        personPlaying.fireAtComputerBoard(1, 1);
 			 
@@ -63,21 +66,87 @@ public class Game  {
 
     }
     
-    public static boolean setGameOverStatus() {
-    	return gameover = true;
+    public static int getValidRow(Board board) {
+        int row;
+        while (true) {
+            System.out.print("Enter row (0 to " + (board.getRow() - 1) + "): ");
+            Scanner scanner = new Scanner(System.in);
+            try {
+            	 row = scanner.nextInt();
+                 if (row >= 0 && row < board.getRow()) {
+                     break;
+                 } else {
+                     System.out.println("Invalid row. Please enter a valid row.");
+                 }
+            	
+            }
+            catch (Exception e) {
+            	System.out.println("Invalid input. Please enter a number.");
+                scanner.next(); // Clear the invalid input
+			}
+           
+        }
+        return row;
     }
 
+    public static int getValidColumn(Board board) {
+        int col;
+        while (true) {
+        	System.out.print("Enter column (0 to " + (board.getColumn() - 1) + "): ");
+        	Scanner scanner = new Scanner(System.in);
+            try {
+                col = scanner.nextInt();
+                if (col >= 0 && col < board.getColumn()) {
+                    break;
+                } else {
+                    System.out.println("Invalid column. Please enter a valid column.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+        return col;
+    }
+    
     // Method to get board size from user
     private static int[] GetBoardSize() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Please enter board size (rows cols): ");
-        int rows = scanner.nextInt();
-        int cols = scanner.nextInt();
-
+       
+        int rows ;
+        int cols;
+        
+        while (true) {
+        	System.out.print("Please enter board size (rows cols): ");
+            
+        	rows = scanner.nextInt();
+        	cols = scanner.nextInt();
+            if (cols >= 5 && rows >= 5) {
+                break;
+            } else {
+                System.out.println("Invalid grid size (needs to be at least 5x5 to play). Please enter a valid grid size.");
+            }
+        }
+        
         return new int[]{rows, cols};
     }
     
+    
+    
+    
+    public static void playTurn(Board board,Player player) {
+        int row = getValidRow(board);
+        int col = getValidColumn(board);
+        // Fire at the player's board
+        player.fireAtComputerBoard(row, col);
+    }
+    
+    public static boolean setGameOverStatus() {
+    	return gameover = true;
+    }
+
+
  
 
     // Method to place ships on the player board
@@ -96,9 +165,10 @@ public class Game  {
             while (!shipPlaced) {
                 // Prompt the user for ship placement
                 System.out.println("Placing " + shipType + "...");
-                System.out.print("Enter row and column for the starting position (row col): ");
-                int row = scanner.nextInt();
-                int col = scanner.nextInt();
+                System.out.print("Enter row and column for the starting position (row): ");
+                int row = getValidRow(board);
+                System.out.print("Enter row and column for the starting position (col): ");
+                int col = getValidColumn(board);
                 
 
                 // Prompt the user to specify the orientation
