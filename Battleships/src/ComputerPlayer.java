@@ -44,13 +44,23 @@ public class ComputerPlayer {
                 
                 // Check if there's enough space on the board for the ship
                 if (_computerBoard.canPlaceShip(row, col, ship, horizontal)) {
-                    _computerBoard.placeShip(row, col, ship, horizontal);
+                    _computerBoard.placeShip(row, col, ship, horizontal, true);
                     placed = true;
                 }
             }
         }
     }
     
+    
+    public int[] setRandomFireLocations() {
+    	
+    	int row = random_placement.nextInt(_computerBoard.getRow());
+    	int col = random_placement.nextInt(_computerBoard.getColumn());
+    	
+    	return new int[] {row, col};
+    	
+//    	POTENTIAL IMPROVEMENT TO DO REQUEST COL AND ROW IN ONE VARIABLE
+    }
     
     public int getRandomRow() {
     	int row = random_placement.nextInt(_computerBoard.getRow());
@@ -78,11 +88,10 @@ public class ComputerPlayer {
         }
 
         // Check if the position has already been fired upon
-        if (_playerBoard.hasBeenFiredUpon(row, col)) {
-        	System.out.println("Computer Already Fired upon!" + row + " " +col);
-        	
-            fireAtPlayerBoard(); // Retry with a different position
-            return;
+        while (_playerBoard.hasBeenFiredUpon(row, col)) {
+            System.out.println("Computer Already Fired upon: " + row + " " + col);
+            row = getRandomRow();
+            col = getRandomColumn(); // Retry with a different position
         }
 
         // Mark the position as fired upon
@@ -97,15 +106,23 @@ public class ComputerPlayer {
                 targetingMode = true;
                 currentDirection = Direction.UP; // Start with UP direction
             }
+            
+            if (_playerBoard.remainingShips.isEmpty()) {
+               Game.endGameWithVictory("Computer");
+            }else if (_computerBoard.remainingShips.isEmpty()) {
+            	Game.endGameWithVictory("Player");
+			}
+
         } else {
             System.out.println("Computer Miss!");
             if (targetingMode) {
-                hitstreak = 0;
                 currentDirection = getNextDirection();
                 if (currentDirection == null) {
                     targetingMode = false;
+                    hitstreak = 0;
                 }
             }
+
         }
     }
 
@@ -125,9 +142,16 @@ public class ComputerPlayer {
                 col += 1;
                 break;
         }
+        // Check if the target is within bounds
         if (row < 0 || row >= _playerBoard.getRow() || col < 0 || col >= _playerBoard.getColumn()) {
             currentDirection = getNextDirection();
-            return getNextTarget();
+            if (currentDirection == null) {
+                targetingMode = false;
+                hitstreak = 0;
+                return new int[]{getRandomRow(), getRandomColumn()};
+            } else {
+                return getNextTarget();
+            }
         }
         return new int[]{row, col};
     }
@@ -145,6 +169,7 @@ public class ComputerPlayer {
         }
         return null;
     }
+
     
     
     public enum Direction {

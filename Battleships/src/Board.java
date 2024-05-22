@@ -54,25 +54,26 @@ public class Board extends JPanel {
     
     
     // Method to place a ship on the board
-    public void placeShip(int row, int col, Ships ship, boolean horizontal) {
+    public void placeShip(int row, int col, Ships ship, boolean horizontal, boolean ComputerPlacement) {
         int length = ship.getShipLength();
         Color color = Color.BLACK; // Change color as needed
         Color shipColor = ship.getShipColor();
+        boolean computerplacement = ComputerPlacement;
         remainingShips.add(ship);
         // Check if there is enough space to place the ship horizontally
-        if (horizontal && col + length > cols) {
+        if (horizontal && col + length > cols && computerplacement ==false) {
             System.out.println("Not enough space to place the ship horizontally from the specified position.");
             return;
         }
 
         // Check if there is enough space to place the ship vertically
-        if (!horizontal && row + length > rows) {
+        if (!horizontal && row + length > rows && computerplacement ==false) {
             System.out.println("Not enough space to place the ship vertically from the specified position.");
             return;
         }
 
         // Place the ship on the board
-        if (horizontal) {
+        if (horizontal && computerplacement ==false) {
             for (int i = 0; i < length; i++) {
                 if (col + i < cols) { // Check if index is within bounds
                     shipgrid[row][col + i] = ship;
@@ -82,13 +83,54 @@ public class Board extends JPanel {
                     return;
                 }
             }
-        } else { // vertical placement
+        } if (computerplacement ==false) { // vertical placement
             for (int i = 0; i < length; i++) {
                 if (row + i < rows) { // Check if index is within bounds
                     shipgrid[row + i][col] = ship;
                     buttons[row + i][col].setBackground(shipColor); // Display ship type on button
                 } else {
                     System.out.println("Attempting to place ship out of bounds vertically.");
+                    return;
+                }
+            }
+        }
+        
+        
+// IF COMPUTER PLACEMENT  
+        
+        
+        
+        if (horizontal && col + length > cols && computerplacement ==true) {
+            System.out.println("Not enough space to place the ship horizontally from the specified position.");
+            return;
+        }
+
+        // Check if there is enough space to place the ship vertically
+        if (!horizontal && row + length > rows && ComputerPlacement==true) {
+            System.out.println("Not enough space to place the ship vertically from the specified position.");
+            return;
+        }
+
+        // Place the ship on the board
+        if (horizontal && ComputerPlacement==true) {
+            for (int i = 0; i < length; i++) {
+                if (col + i < cols) { // Check if index is within bounds
+                    shipgrid[row][col + i] = ship;
+              
+    
+                } else {
+                    System.out.println("Attempting to place ship out of bounds horizontally.");
+                    return;
+                }
+            }
+        } else { // vertical placement
+            for (int i = 0; i < length; i++) {
+                if (row + i < rows) { // Check if index is within bounds
+                    shipgrid[row + i][col] = ship;
+                   
+                    // Display ship type on button
+                } else {
+                    System.out.println("Attempting to place ship out of bounds vertically computer." + row + col);
                     return;
                 }
             }
@@ -137,16 +179,25 @@ public class Board extends JPanel {
 	public void markPositionAsFiredUpon(int row, int col) {
 		firedPositions[row][col] = true;
 		buttons[row][col].setEnabled(false); // Disable the button to prevent further firing
-	    Color originalColor = buttons[row][col].getBackground();
-	    Color firedColor = Color.WHITE; 
-	    buttons[row][col].setBackground(firedColor); // Change the background color to indicate firing
+		ImageIcon hitIcon = new ImageIcon("J:\\eclipse_workspace\\Battleships-Game-Project\\Battleships\\src\\puddle.png"); 
+		 int buttonWidth = buttons[row][col].getWidth();
+	        int buttonHeight = buttons[row][col].getHeight();
+
+	        // Resize the image to fit the button size
+	        Image img = hitIcon.getImage();
+	        Image resizedImg = img.getScaledInstance(buttonWidth, buttonHeight, Image.SCALE_SMOOTH);
+	        ImageIcon resizedIcon = new ImageIcon(resizedImg);
+
+
 	    if (hasShipAt(row, col)) {
 	        // Handle hit
 	        // Update button appearance to indicate a hit
 	        updateButtonForHit(row, col);
+	        return;
 	    } 
 //	    handleFiredPosition(row, col);
-		
+        // Set the resized image as the button icon
+	    buttons[row][col].setIcon(resizedIcon);
 	}
 	
 	public void handleFiredPosition(int row, int col) {
@@ -181,21 +232,31 @@ public class Board extends JPanel {
 	}
 	private void updateButtonForHit(int row, int col) {
 	    // Change button appearance to indicate a hit (e.g., change color)
-	    buttons[row][col].setBackground(Color.RED);
+		ImageIcon hitIcon = new ImageIcon("J:\\eclipse_workspace\\Battleships-Game-Project\\Battleships\\src\\explode.png"); 
+		 int buttonWidth = buttons[row][col].getWidth();
+	        int buttonHeight = buttons[row][col].getHeight();
+
+	        // Resize the image to fit the button size
+	        Image img = hitIcon.getImage();
+	        Image resizedImg = img.getScaledInstance(buttonWidth, buttonHeight, Image.SCALE_SMOOTH);
+	        ImageIcon resizedIcon = new ImageIcon(resizedImg);
+
+	        // Set the resized image as the button icon
+	    buttons[row][col].setIcon(resizedIcon);
 	    Ships ship = shipgrid[row][col];
 	    int numberOfShipsRemaining = remainingShips.size();
 	    if (ship != null) {
             ship.registerHit();
-            System.out.println(numberOfShipsRemaining);
+            
             System.out.println(remainingShips);
             // If the ship is sunk, remove it from the list
             if (ship.isSunk()) {
                 remainingShips.remove(ship);
-                System.out.println(numberOfShipsRemaining);
-                System.out.println(remainingShips);
+         
+    
                 // If there are no remaining ships, the player wins
                 if (remainingShips.isEmpty()) {
-                    endGameWithVictory();
+//                    endGameWithVictory("Player");
                 }
             }
             
@@ -203,12 +264,8 @@ public class Board extends JPanel {
         
         }
 	}
-	private void endGameWithVictory() {
-	        // Display a message or perform any other end-of-game actions
-	        System.out.println("Congratulations! You have sunk all enemy ships. You win!");
-	        // You can add more actions here, such as displaying a dialog, stopping the game loop, etc.
-	        Game.setGameOverStatus();
-	    }
+
+
 
 
 }

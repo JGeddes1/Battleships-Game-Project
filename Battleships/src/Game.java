@@ -1,90 +1,99 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.Console;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Game  {
-	
-	private static boolean gameover = false;
+public class Game {
+    private static boolean gameover = false;
+    private static JFrame frame;
 
     public static void main(String[] args) {
         // Get board size from user
         int[] boardSize = GetBoardSize();
-        
+
         // Create player board
         Board playerBoard = new Board(boardSize[0], boardSize[1]);
-//        placeShips(playerBoard); // Place ships on player board
 
         // Create computer board
         Board computerBoard = new Board(boardSize[0], boardSize[1]);
-        // Implement logic to place computer ships (not shown)
 
         // Create a frame to contain both player and computer boards
-        JFrame frame = new JFrame("Battleships Game");
+        frame = new JFrame("Battleships Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridLayout(1, 2)); // Split the frame into two columns
-        // Create gap between player and computer boards
         JPanel gapPanel = new JPanel();
         gapPanel.setPreferredSize(new Dimension(20, 20)); // Adjust gap size
+        
         frame.add(playerBoard);
         frame.add(gapPanel, BorderLayout.CENTER);
         frame.add(computerBoard);
 
         frame.pack();
         frame.setVisible(true);
-        
-        
+
         placePlayerShips(playerBoard);
-        
+
         // Create the computer player
         ComputerPlayer computerPlayer = new ComputerPlayer(computerBoard, playerBoard);
 
         // Place ships randomly on the computer board
         computerPlayer.placeShipsRandomly();
-        
-        
+
         Player personPlaying = new Player(playerBoard, computerBoard);
-        
+
         while (!gameover) {
-        	
-        	 playTurn(computerBoard, personPlaying);
-//			 int playerShootPositionX = personPlaying.PlayerShootRow();
-//			 int playerShootPositionY = personPlaying.PlayerShootColumn();
-//			 personPlaying.fireAtComputerBoard(playerShootPositionX,playerShootPositionY);
-			 
-	//        personPlaying.fireAtComputerBoard(1, 1);
-			 
-//			 COMPUTER SHOOTING
-			 
-
-			 computerPlayer.fireAtPlayerBoard();
-			 
-
-		}
-       
-
+            playTurn(computerBoard, personPlaying);
+            computerPlayer.fireAtPlayerBoard();
+        }
     }
-    
+
+    public static void endGameWithVictory(String winner) {
+        // Display a message or perform any other end-of-game actions
+        String message;
+        if (winner.equals("Player")) {
+            message = "Congratulations! You have sunk all enemy ships. You win!";
+        } else {
+            message = "The computer has sunk all your ships. You lose!";
+        }
+
+        // Show the message in a dialog box
+        JOptionPane.showMessageDialog(frame, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+        // Ask if the player wants to play again
+        int response = JOptionPane.showConfirmDialog(frame, "Do you want to play again?", "Play Again", JOptionPane.YES_NO_OPTION);
+
+        if (response == JOptionPane.YES_OPTION) {
+            resetGame();
+        } else {
+            System.exit(0); // Exit the application
+        }
+    }
+
+    private static void resetGame() {
+        // Dispose of the current game frame
+        if (frame != null) {
+            frame.dispose();
+        }
+
+        // Restart the game by calling the main method
+        SwingUtilities.invokeLater(() -> Game.main(null));
+    }
+
     public static int getValidRow(Board board) {
         int row;
         while (true) {
-            System.out.print("Enter row to shoot at (0 to " + (board.getRow() - 1) + "): ");
+            System.out.print("Enter row (0 to " + (board.getRow() - 1) + "): ");
             Scanner scanner = new Scanner(System.in);
             try {
-            	 row = scanner.nextInt();
-                 if (row >= 0 && row < board.getRow()) {
-                     break;
-                 } else {
-                     System.out.println("Invalid row. Please enter a valid row.");
-                 }
-            	
-            }
-            catch (Exception e) {
-            	System.out.println("Invalid input. Please enter a number.");
+                row = scanner.nextInt();
+                if (row >= 0 && row < board.getRow()) {
+                    break;
+                } else {
+                    System.out.println("Invalid row. Please enter a valid row.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
                 scanner.next(); // Clear the invalid input
-			}
-           
+            }
         }
         return row;
     }
@@ -92,8 +101,8 @@ public class Game  {
     public static int getValidColumn(Board board) {
         int col;
         while (true) {
-        	System.out.print("Enter column to shoot at (0 to " + (board.getColumn() - 1) + "): ");
-        	Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter column (0 to " + (board.getColumn() - 1) + "): ");
+            Scanner scanner = new Scanner(System.in);
             try {
                 col = scanner.nextInt();
                 if (col >= 0 && col < board.getColumn()) {
@@ -108,48 +117,39 @@ public class Game  {
         }
         return col;
     }
-    
-    // Method to get board size from user
+
     private static int[] GetBoardSize() {
         Scanner scanner = new Scanner(System.in);
 
-       
-        int rows ;
+        int rows;
         int cols;
-        
+
         while (true) {
-        	System.out.print("Please enter board size (rows cols): ");
-            
-        	rows = scanner.nextInt();
-        	cols = scanner.nextInt();
+            System.out.print("Please enter board size (rows cols): ");
+
+            rows = scanner.nextInt();
+            cols = scanner.nextInt();
             if (cols >= 5 && rows >= 5) {
                 break;
             } else {
                 System.out.println("Invalid grid size (needs to be at least 5x5 to play). Please enter a valid grid size.");
             }
         }
-        
+
         return new int[]{rows, cols};
     }
-    
-    
-    
-    
-    public static void playTurn(Board board,Player player) {
+
+    public static void playTurn(Board board, Player player) {
         int row = getValidRow(board);
         int col = getValidColumn(board);
         // Fire at the player's board
         player.fireAtComputerBoard(row, col);
     }
-    
+
     public static boolean setGameOverStatus() {
-    	return gameover = true;
+        return gameover = true;
     }
 
-
- 
-
-    // Method to place ships on the player board
     private static void placePlayerShips(Board board) {
         Scanner scanner = new Scanner(System.in);
 
@@ -169,7 +169,6 @@ public class Game  {
                 int row = getValidRow(board);
                 System.out.print("Enter row and column for the starting position (col): ");
                 int col = getValidColumn(board);
-                
 
                 // Prompt the user to specify the orientation
                 System.out.print("Enter 'h' for horizontal or 'v' for vertical placement: ");
@@ -179,7 +178,7 @@ public class Game  {
                 // Check if the ship can be placed at the specified position
                 if (board.canPlaceShip(row, col, ship, horizontal)) {
                     // Place the ship on the board
-                    board.placeShip(row, col, ship, horizontal); 
+                    board.placeShip(row, col, ship, horizontal, false);
                     shipPlaced = true; // Set flag to indicate ship has been placed
                 } else {
                     // Display error message and prompt the user to try again
@@ -188,10 +187,8 @@ public class Game  {
             }
         }
     }
-	
-    
-    
-    
+}
+
     
     
 // OLD CODE CAN REMOVE BUT LEFT FOR REFERENCE
@@ -230,4 +227,4 @@ public class Game  {
 //	
 //	}
 	
-}
+
