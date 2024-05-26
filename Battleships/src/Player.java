@@ -29,7 +29,8 @@ public class Player {
 
         // Check if the fired position contains a ship
         if (computerBoard.hasShipAt(row, col)) {
-            System.out.println("Hit!");
+            System.out.println("Player Hit!");
+            
             
             // Handle hit logic (e.g., mark the ship as hit)
         } else {

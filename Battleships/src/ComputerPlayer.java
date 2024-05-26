@@ -89,7 +89,7 @@ public class ComputerPlayer {
 
         // Check if the position has already been fired upon
         while (_playerBoard.hasBeenFiredUpon(row, col)) {
-            System.out.println("Computer Already Fired upon: " + row + " " + col);
+//            System.out.println("Computer Already Fired upon: " + row + " " + col);
             row = getRandomRow();
             col = getRandomColumn(); // Retry with a different position
         }

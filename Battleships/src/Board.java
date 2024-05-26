@@ -248,7 +248,7 @@ public class Board extends JPanel {
 	    if (ship != null) {
             ship.registerHit();
             
-            System.out.println(remainingShips);
+//            System.out.println(remainingShips);
             // If the ship is sunk, remove it from the list
             if (ship.isSunk()) {
                 remainingShips.remove(ship);

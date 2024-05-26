@@ -68,11 +68,15 @@ public class Ships {
     
     
     public void registerHit() {
+    	String GREEN = "\u001B[32m";
+    	String RED = "\u001B[31m";
+    	String RESET = "\u001B[0m";
     	hits++;
     	int shipHitsLeft = getLength(type) - hits;
-    	System.out.println("Hit! " + shipHitsLeft + " hits left on " + type );
+    	System.out.println(RED+"Hit! " + shipHitsLeft + " hits left on " + type +RESET );
         if (isSunk()) {
-            System.out.println("Ship " + type + " has been sunk!");
+
+            System.out.println(GREEN+ "Ship " + type + " has been sunk!" + RESET);
             
         }
     }
