@@ -58,25 +58,25 @@ public class Game {
         // Show the message in a dialog box
         JOptionPane.showMessageDialog(frame, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-        // Ask if the player wants to play again
-        int response = JOptionPane.showConfirmDialog(frame, "Do you want to play again?", "Play Again", JOptionPane.YES_NO_OPTION);
-
-        if (response == JOptionPane.YES_OPTION) {
-            resetGame();
-        } else {
-            System.exit(0); // Exit the application
-        }
+//        // Ask if the player wants to play again
+//        int response = JOptionPane.showConfirmDialog(frame, "Do you want to play again?", "Play Again", JOptionPane.YES_NO_OPTION);
+//
+//        if (response == JOptionPane.YES_OPTION) {
+//            resetGame();
+//        } else {
+//            System.exit(0); // Exit the application
+//        }
     }
 
-    private static void resetGame() {
-        // Dispose of the current game frame
-        if (frame != null) {
-            frame.dispose();
-        }
-
-        // Restart the game by calling the main method
-        SwingUtilities.invokeLater(() -> Game.main(null));
-    }
+//    private static void resetGame() {
+//        // Dispose of the current game frame
+//        if (frame != null) {
+//            frame.dispose();
+//        }
+//
+//        // Restart the game by calling the main method
+//        SwingUtilities.invokeLater(() -> Game.main(null));
+//    }
 
     public static int getValidRow(Board board) {
         int row;

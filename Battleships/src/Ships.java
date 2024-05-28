@@ -1,10 +1,12 @@
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Ships {
     private final Ship_Types type;
     private int length;
     private int hits;
-    
+    private List<int[]> coordinates;
     // Define colors for each ship type
     private static final Color DESTROYER_COLOR = Color.ORANGE;
     private static final Color BATTLESHIP_COLOR = Color.DARK_GRAY;
@@ -15,6 +17,7 @@ public class Ships {
     public Ships(Ship_Types type) {
         this.type = type;
         this.hits = 0;
+        this.coordinates = new ArrayList<>();
         
     }
 
@@ -28,7 +31,13 @@ public class Ships {
         return getLength(type);
     }
     
-    
+    public void addCoordinate(int row, int col) {
+        coordinates.add(new int[]{row, col});
+    }
+
+    public List<int[]> getCoordinates() {
+        return coordinates;
+    }
     
     // Method to get the length of a ship based on its type
     private int getLength(Ship_Types type) {

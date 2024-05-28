@@ -51,6 +51,13 @@ public class Board extends JPanel {
     }
     
     
+    public void displaySunkShip(Ships ship) {
+    	for (int[] coordinate : ship.getCoordinates()) {
+            int row = coordinate[0];
+            int col = coordinate[1];
+            buttons[row][col].setBackground(ship.getShipColor()); // Change color to indicate a sunk ship
+        }
+    }
     
     
     // Method to place a ship on the board
@@ -77,6 +84,7 @@ public class Board extends JPanel {
             for (int i = 0; i < length; i++) {
                 if (col + i < cols) { // Check if index is within bounds
                     shipgrid[row][col + i] = ship;
+                    ship.addCoordinate(row, col + i);
                     buttons[row][col + i].setBackground(shipColor); // Display ship type on button
                 } else {
                     System.out.println("Attempting to place ship out of bounds horizontally.");
@@ -87,6 +95,7 @@ public class Board extends JPanel {
             for (int i = 0; i < length; i++) {
                 if (row + i < rows) { // Check if index is within bounds
                     shipgrid[row + i][col] = ship;
+                    ship.addCoordinate(row + i, col);
                     buttons[row + i][col].setBackground(shipColor); // Display ship type on button
                 } else {
                     System.out.println("Attempting to place ship out of bounds vertically.");
@@ -116,6 +125,7 @@ public class Board extends JPanel {
             for (int i = 0; i < length; i++) {
                 if (col + i < cols) { // Check if index is within bounds
                     shipgrid[row][col + i] = ship;
+                    ship.addCoordinate(row, col + 1);
               
     
                 } else {
@@ -127,6 +137,7 @@ public class Board extends JPanel {
             for (int i = 0; i < length; i++) {
                 if (row + i < rows) { // Check if index is within bounds
                     shipgrid[row + i][col] = ship;
+                    ship.addCoordinate(row + i, col);
                    
                     // Display ship type on button
                 } else {
@@ -217,7 +228,6 @@ public class Board extends JPanel {
 	    
 	    
 	    
-	    
 	 // Check if there is a ship at the specified position
 	    // You may need to access the ship placement information stored in your Board class
 	    // For example, if you have a 2D array representing the board where each element stores the ship information,
@@ -252,7 +262,7 @@ public class Board extends JPanel {
             // If the ship is sunk, remove it from the list
             if (ship.isSunk()) {
                 remainingShips.remove(ship);
-         
+                displaySunkShip(ship);
     
                 // If there are no remaining ships, the player wins
                 if (remainingShips.isEmpty()) {
