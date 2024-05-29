@@ -21,34 +21,34 @@ public class ComputerPlayer {
     }
 
     public void placeShipsRandomly() {
-        for (Ship_Types type : Ship_Types.values()) {
-            boolean placed = false;
-            while (!placed) {
-                int row = random_placement.nextInt(_computerBoard.getRow());
-           
-                int col = random_placement.nextInt(_computerBoard.getColumn());
-                
-                
-                boolean horizontal = random_placement.nextBoolean(); 
-                if (row >=_computerBoard.getRow() || col >= _computerBoard.getColumn()) {
-                	 do  {
-                    	 row = random_placement.nextInt(_computerBoard.getRow());
-                        
-                         col = random_placement.nextInt(_computerBoard.getColumn());
-    				}while(row >9 || col > 9);
-					
-				}
-               
-                
-                Ships ship = new Ships(type);
-                
-                // Check if there's enough space on the board for the ship
-                if (_computerBoard.canPlaceShip(row, col, ship, horizontal)) {
-                    _computerBoard.placeShip(row, col, ship, horizontal, true);
-                    placed = true;
-                }
-            }
-        }
+    	 for (Ship_Types type : Ship_Types.values()) {
+    	        boolean placed = false;
+    	        while (!placed) {
+    	            int row = random_placement.nextInt(_computerBoard.getRow());
+    	            int col = random_placement.nextInt(_computerBoard.getColumn());
+    	            boolean horizontal = random_placement.nextBoolean();
+    	            
+    	            Ships ship = new Ships(type);
+
+    	            if (horizontal) {
+    	                // Ensure the ship fits horizontally within the board
+    	                if (col + type.getLength() <= _computerBoard.getColumn()) {
+    	                    if (_computerBoard.canPlaceShip(row, col, ship, horizontal)) {
+    	                        _computerBoard.placeShip(row, col, ship, horizontal, true);
+    	                        placed = true;
+    	                    }
+    	                }
+    	            } else {
+    	                // Ensure the ship fits vertically within the board
+    	                if (row + type.getLength() <= _computerBoard.getRow()) {
+    	                    if (_computerBoard.canPlaceShip(row, col, ship, horizontal)) {
+    	                        _computerBoard.placeShip(row, col, ship, horizontal, true);
+    	                        placed = true;
+    	                    }
+    	                }
+    	            }
+    	        }
+    	    }
     }
     
     

@@ -92,6 +92,6 @@ public class Ships {
 
     public boolean isSunk() {
     	
-        return hits == getLength(type);
+        return hits == getLength(getType());
     }
 }

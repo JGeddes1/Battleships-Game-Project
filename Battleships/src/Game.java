@@ -20,12 +20,32 @@ public class Game {
         frame = new JFrame("Battleships Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridLayout(1, 2)); // Split the frame into two columns
+        JPanel playerPanel = new JPanel();
+        playerPanel.setLayout(new BorderLayout());
+        JLabel playerHeader = new JLabel("Player Board", SwingConstants.CENTER);
+        playerPanel.add(playerHeader, BorderLayout.NORTH);
+        playerPanel.add(createBoardWithNumbers(playerBoard), BorderLayout.CENTER);
+
+        // Create computer panel with header
+        JPanel computerPanel = new JPanel();
+        computerPanel.setLayout(new BorderLayout());
+        JLabel computerHeader = new JLabel("Computer Board", SwingConstants.CENTER);
+        computerPanel.add(computerHeader, BorderLayout.NORTH);
+        computerPanel.add(createBoardWithNumbers(computerBoard), BorderLayout.CENTER);
         JPanel gapPanel = new JPanel();
         gapPanel.setPreferredSize(new Dimension(20, 20)); // Adjust gap size
-        
-        frame.add(playerBoard);
+        // Add panels to frame
+        frame.add(playerPanel);
         frame.add(gapPanel, BorderLayout.CENTER);
-        frame.add(computerBoard);
+        frame.add(computerPanel);
+
+        
+        
+        
+       
+        
+        
+ 
 
         frame.pack();
         frame.setVisible(true);
@@ -39,11 +59,48 @@ public class Game {
         computerPlayer.placeShipsRandomly();
 
         Player personPlaying = new Player(playerBoard, computerBoard);
-
+        
         while (!gameover) {
             playTurn(computerBoard, personPlaying);
             computerPlayer.fireAtPlayerBoard();
+
         }
+    }
+    
+    private static JPanel createBoardWithNumbers(Board board) {
+        int rows = board.getRow();
+        int cols = board.getColumn();
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Create row numbers
+        JPanel rowNumbers = new JPanel(new GridLayout(rows +0, 1));
+       
+        for (int i = 0; i < rows; i++) {
+            rowNumbers.add(new JLabel(String.valueOf(i), SwingConstants.CENTER));
+        }
+
+        // Create column numbers
+        JPanel colNumbers = new JPanel(new GridLayout(1, cols + 1));
+        colNumbers.add(new JLabel("")); // Empty top-left corner
+        for (int i = 0; i < cols; i++) {
+            colNumbers.add(new JLabel(String.valueOf(i), SwingConstants.LEFT));
+        }
+
+        // Create board panel
+        JPanel boardPanel = new JPanel(new GridLayout(rows, cols));
+        JButton[][] buttons = board.getButtons();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                boardPanel.add(buttons[i][j]);
+            }
+        }
+        // Add row numbers to the left and board panel to the center
+        panel.add(rowNumbers, BorderLayout.WEST);
+        panel.add(colNumbers, BorderLayout.NORTH);
+        panel.add(boardPanel, BorderLayout.CENTER);
+
+        return panel;
     }
 
     public static void endGameWithVictory(String winner) {

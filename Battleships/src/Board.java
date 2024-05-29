@@ -39,6 +39,11 @@ public class Board extends JPanel {
         }
         
     }
+    
+    public JButton[][] getButtons(){
+    	
+    	return buttons;
+    }
 
     // Getter for the number of rows
     public int getRow() {
@@ -91,7 +96,7 @@ public class Board extends JPanel {
                     return;
                 }
             }
-        } if (computerplacement ==false) { // vertical placement
+        } if (!horizontal && computerplacement ==false) { // vertical placement
             for (int i = 0; i < length; i++) {
                 if (row + i < rows) { // Check if index is within bounds
                     shipgrid[row + i][col] = ship;
@@ -126,22 +131,21 @@ public class Board extends JPanel {
                 if (col + i < cols) { // Check if index is within bounds
                     shipgrid[row][col + i] = ship;
                     ship.addCoordinate(row, col + 1);
-              
+//                    buttons[row + i][col].setBackground(shipColor); // Display ship type on button
     
                 } else {
                     System.out.println("Attempting to place ship out of bounds horizontally.");
                     return;
                 }
             }
-        } else { // vertical placement
+        }if (!horizontal && computerplacement ==true) { // vertical placement
             for (int i = 0; i < length; i++) {
                 if (row + i < rows) { // Check if index is within bounds
                     shipgrid[row + i][col] = ship;
                     ship.addCoordinate(row + i, col);
-                   
-                    // Display ship type on button
+//                    buttons[row + i][col].setBackground(shipColor); // Display ship type on button
                 } else {
-                    System.out.println("Attempting to place ship out of bounds vertically computer." + row + col);
+                    System.out.println("Attempting to place ship out of bounds vertically.");
                     return;
                 }
             }
@@ -150,33 +154,45 @@ public class Board extends JPanel {
     
     public boolean canPlaceShip(int startRow, int startCol, Ships ship, boolean horizontal) {
         int length = ship.getShipLength();
-
-        // Check if the ship will fit within the boundaries of the board
+        
         if (horizontal && startCol + length > cols) {
-            return false; // Not enough horizontal space
-        }
-        if (!horizontal && startRow + length > rows) {
-            return false; // Not enough vertical space
+            System.out.println("Not enough space to place the ship horizontally from the specified position.");
+            return false;
         }
 
-        // Check if any cells are already occupied by other ships
+        // Check if there is enough space to place the ship vertically
+        if (!horizontal && startRow + length > rows) {
+            System.out.println("Not enough space to place the ship vertically from the specified position.");
+            return false;
+        }
+
         if (horizontal) {
+            // Check if the ship goes out of bounds horizontally
+            if (startCol + length > getColumn()) {
+                return false;
+            }
+            // Check for overlap
             for (int i = 0; i < length; i++) {
-                if (buttons[startRow][startCol + i].getBackground() != Color.BLUE) {
-                    return false; // Ship overlap
+                if (shipgrid[startRow][startCol + i] != null) {
+                    return false;
                 }
             }
         } else {
+            // Check if the ship goes out of bounds vertically
+            if (startRow + length > getRow()) {
+                return false;
+            }
+            // Check for overlap
             for (int i = 0; i < length; i++) {
-                if (buttons[startRow + i][startCol].getBackground() != Color.BLUE) {
-                    return false; // Ship overlap
+                if (shipgrid[startRow + i][startCol] != null) {
+                    return false;
                 }
             }
         }
 
-        // The ship can be placed at the specified position
         return true;
     }
+
     
     
     
@@ -265,9 +281,9 @@ public class Board extends JPanel {
                 displaySunkShip(ship);
     
                 // If there are no remaining ships, the player wins
-                if (remainingShips.isEmpty()) {
-//                    endGameWithVictory("Player");
-                }
+//                if (remainingShips.isEmpty()) {
+////                    endGameWithVictory("Player");
+//                }
             }
             
             
